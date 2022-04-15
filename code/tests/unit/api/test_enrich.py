@@ -1,13 +1,14 @@
-from pytest import fixture
 from http import HTTPStatus
-from .utils import get_headers
 from unittest.mock import patch
+
+from pytest import fixture
+
+from tests.unit.api.utils import get_headers
 from ..conftest import mock_api_response
 from ..payloads_for_tests import EXPECTED_RESPONSE_OF_JWKS_ENDPOINT
 
 
 def routes():
-    yield '/deliberate/observables'
     yield '/observe/observables'
     yield '/refer/observables'
 
