@@ -7,8 +7,10 @@ name = "pypi"
 cryptography = "==3.3.2"
 Flask = "==2.0.1"
 marshmallow = "==3.12.1"
-requests = "==2.25.1"
+requests = "==2.27.1"
 PyJWT = "==2.1.0"
+censys = "==2.1.3"
+Werkzeug = "==2.0.1"
 
 [dev-packages]
 flake8 = "==3.9.2"

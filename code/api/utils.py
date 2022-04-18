@@ -89,8 +89,8 @@ def get_jwt():
     """
 
     expected_errors = {
-        KeyError: WRONG_PAYLOAD_STRUCTURE,
-        AssertionError: JWKS_HOST_MISSING,
+        KeyError: JWKS_HOST_MISSING,
+        AssertionError: WRONG_PAYLOAD_STRUCTURE,
         InvalidSignatureError: WRONG_KEY,
         DecodeError: WRONG_JWT_STRUCTURE,
         InvalidAudienceError: WRONG_AUDIENCE,
@@ -98,15 +98,18 @@ def get_jwt():
     }
     token = get_auth_token()
     try:
-        jwks_payload = jwt.decode(token, options={'verify_signature': False})
-        assert 'jwks_host' in jwks_payload
-        jwks_host = jwks_payload.get('jwks_host')
+        jwks_host = jwt.decode(
+            token, options={'verify_signature': False}
+        )['jwks_host']
         key = get_public_key(jwks_host, token)
         aud = request.url_root
         payload = jwt.decode(
             token, key=key, algorithms=['RS256'], audience=[aud.rstrip('/')]
         )
-        return payload['key']
+        assert 'api_id' in payload
+        assert 'api_secret' in payload
+
+        return payload
     except tuple(expected_errors) as error:
         message = expected_errors[error.__class__]
         raise AuthorizationError(message)
