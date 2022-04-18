@@ -5,9 +5,18 @@ import jwt
 import requests
 from flask import request, jsonify
 from jwt import InvalidSignatureError, DecodeError, InvalidAudienceError
-from requests.exceptions import ConnectionError, InvalidURL, HTTPError
+from requests.exceptions import (
+    ConnectionError,
+    InvalidURL,
+    HTTPError,
+    SSLError,
+)
+from censys.common.exceptions import (
+    CensysUnauthorizedException,
+    CensysException,
+)
 
-from api.errors import AuthorizationError, InvalidArgumentError
+from api.errors import AuthorizationError, InvalidArgumentError, CensysSSLError
 
 NO_AUTH_HEADER = 'Authorization header is missing'
 WRONG_AUTH_TYPE = 'Wrong authorization type'
@@ -78,7 +87,7 @@ def get_auth_token():
         raise AuthorizationError(expected_errors[error.__class__])
 
 
-def get_jwt():
+def get_credentials():
     """
     Get Authorization token and validate its signature
     against the public key from /.well-known/jwks endpoint.
@@ -141,3 +150,14 @@ def jsonify_data(data):
 
 def jsonify_errors(data):
     return jsonify({'errors': [data]})
+
+
+def catch_errors(func):
+    def wraps(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except SSLError as error:
+            raise CensysSSLError(error)
+        except (CensysUnauthorizedException, CensysException) as error:
+            raise AuthorizationError(error)
+    return wraps

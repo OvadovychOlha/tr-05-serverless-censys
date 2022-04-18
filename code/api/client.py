@@ -1,5 +1,7 @@
 from censys.search import CensysHosts
 
+from api.utils import catch_errors
+
 
 class CensysClient:
     def __init__(self, credentials):
@@ -11,6 +13,8 @@ class CensysClient:
                              api_secret=self.api_secret)
         return client
 
+    @catch_errors
     def health(self):
         client = self._client()
-        client.account()
+        response = client.account()
+        return response

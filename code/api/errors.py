@@ -39,3 +39,15 @@ class WatchdogError(TRFormattedError):
             code='health check failed',
             message='Invalid Health Check'
         )
+
+
+class CensysSSLError(TRFormattedError):
+    def __init__(self, error):
+        message = getattr(
+            error.args[0].reason.args[0], 'verify_message', ''
+        ) or error.args[0].reason.args[0].args[0]
+
+        super().__init__(
+            UNKNOWN,
+            f'Unable to verify SSL certificate: {message}'
+        )
