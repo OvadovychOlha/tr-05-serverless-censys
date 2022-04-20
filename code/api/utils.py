@@ -3,7 +3,7 @@ from json.decoder import JSONDecodeError
 
 import jwt
 import requests
-from flask import request, jsonify
+from flask import request, jsonify, g
 from jwt import InvalidSignatureError, DecodeError, InvalidAudienceError
 from requests.exceptions import (
     ConnectionError,
@@ -14,6 +14,7 @@ from requests.exceptions import (
 from censys.common.exceptions import (
     CensysUnauthorizedException,
     CensysException,
+    CensysSearchException,
 )
 
 from api.errors import AuthorizationError, InvalidArgumentError, CensysSSLError
@@ -158,6 +159,28 @@ def catch_errors(func):
             return func(*args, **kwargs)
         except SSLError as error:
             raise CensysSSLError(error)
+        except CensysSearchException:
+            return []
         except (CensysUnauthorizedException, CensysException) as error:
             raise AuthorizationError(error)
+
     return wraps
+
+
+def format_docs(docs):
+    return {'count': len(docs), 'docs': docs}
+
+
+def jsonify_result():
+    result = {'data': {}}
+
+    if g.get('sightings'):
+        result['data']['sightings'] = format_docs(g.sightings)
+
+    if g.get('errors'):
+        result['errors'] = g.errors
+
+        if not result.get('data'):
+            result.pop('data', None)
+
+    return jsonify(result)

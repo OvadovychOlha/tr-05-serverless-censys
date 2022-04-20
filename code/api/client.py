@@ -18,3 +18,10 @@ class CensysClient:
         client = self._client()
         response = client.account()
         return response
+
+    @catch_errors
+    def get_events(self, observable):
+        client = self._client()
+        events = client.view_host_events(observable['value'])
+
+        return events
