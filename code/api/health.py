@@ -9,8 +9,7 @@ health_api = Blueprint('health', __name__)
 @health_api.route('/health', methods=['POST'])
 def health():
     credentials = get_credentials()
-
     client = CensysClient(credentials)
-    client.health()
+    _ = client.health()
 
     return jsonify_data({'status': 'ok'})

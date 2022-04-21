@@ -74,6 +74,7 @@ class Sighting:
             'short_description': self._short_description(event),
             'description': self._description(event),
             'data': self._make_data_table(event),
+            'title': self._title(),
             **SIGHTING_DEFAULTS,
         }
 

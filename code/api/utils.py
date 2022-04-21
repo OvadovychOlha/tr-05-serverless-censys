@@ -13,7 +13,6 @@ from requests.exceptions import (
 )
 from censys.common.exceptions import (
     CensysUnauthorizedException,
-    CensysException,
     CensysSearchException,
 )
 
@@ -159,10 +158,10 @@ def catch_errors(func):
             return func(*args, **kwargs)
         except SSLError as error:
             raise CensysSSLError(error)
+        except CensysUnauthorizedException as error:
+            raise AuthorizationError(error)
         except CensysSearchException:
             return []
-        except (CensysUnauthorizedException, CensysException) as error:
-            raise AuthorizationError(error)
 
     return wraps
 
