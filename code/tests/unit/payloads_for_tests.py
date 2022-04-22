@@ -528,3 +528,22 @@ def base_payload():
                 }
             }
     }
+
+
+def refer_payload():
+    return {
+        'data':
+            [
+                {
+                    "categories": [
+                        "Censys",
+                        "Search",
+                        "Events"
+                    ],
+                    "description": "Events for this ip in the Censys",
+                    "id": "ref-censys-search-ip-1.1.1.1",
+                    "title": "Events for this IP",
+                    "url": "https://search.censys.io/hosts/1.1.1.1/events"
+                }
+            ]
+    }

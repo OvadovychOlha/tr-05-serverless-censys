@@ -34,5 +34,20 @@ def observe_observables():
 @enrich_api.route('/refer/observables', methods=['POST'])
 def refer_observables():
     _ = get_credentials()
-    _ = get_observables()
-    return jsonify_data([])
+    observables = get_observables()
+
+    relay_output = [
+        {
+            'id': (f'ref-censys-search-{observable["type"].replace("_", "-")}'
+                   f'-{observable["value"]}'),
+            'title': 'Events for this IP',
+            'description':
+                f'Events for this {observable["type"]} in the Censys',
+            'url': f'https://search.censys.io/hosts/{observable["value"]}'
+                   '/events',
+            'categories': ['Censys', 'Search', 'Events'],
+        }
+        for observable in observables
+    ]
+
+    return jsonify_data(relay_output)

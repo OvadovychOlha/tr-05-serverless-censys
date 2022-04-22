@@ -11,6 +11,7 @@ from tests.unit.payloads_for_tests import (
     EXPECTED_RESPONSE_OF_JWKS_ENDPOINT,
     EXPECTED_PAYLOAD_OF_CENSYS,
     base_payload,
+    refer_payload,
 )
 
 
@@ -74,6 +75,8 @@ def test_enrich_call_success(mock_events, mock_request, mock_ids,
     assert response.status_code == HTTPStatus.OK
     if route == '/observe/observables':
         assert response.json == base_payload()
+    elif route == '/refer/observables':
+        assert response.json == refer_payload()
 
 
 @patch('api.client.CensysHosts.view_host_events')
