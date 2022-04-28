@@ -3,7 +3,7 @@ from json.decoder import JSONDecodeError
 
 import jwt
 import requests
-from flask import request, jsonify, g
+from flask import request, jsonify, g, current_app
 from jwt import InvalidSignatureError, DecodeError, InvalidAudienceError
 from requests.exceptions import (
     ConnectionError,
@@ -119,6 +119,8 @@ def get_credentials():
         assert 'api_id' in payload
         assert 'api_secret' in payload
 
+        set_entities_limit(payload)
+
         return payload
     except tuple(expected_errors) as error:
         message = expected_errors[error.__class__]
@@ -186,3 +188,13 @@ def jsonify_result():
             result.pop('data', None)
 
     return jsonify(result)
+
+
+def set_entities_limit(payload):
+    default = current_app.config['CTR_ENTITIES_LIMIT_DEFAULT']
+    try:
+        value = int(payload['CTR_ENTITIES_LIMIT'])
+        current_app.config['CTR_ENTITIES_LIMIT'] = value \
+            if value in range(1, default + 1) else default
+    except (ValueError, TypeError, KeyError):
+        current_app.config['CTR_ENTITIES_LIMIT'] = default
