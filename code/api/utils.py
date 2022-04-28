@@ -13,7 +13,7 @@ from requests.exceptions import (
 )
 from censys.common.exceptions import (
     CensysUnauthorizedException,
-    CensysSearchException,
+    CensysSearchException, CensysException,
 )
 
 from api.errors import AuthorizationError, InvalidArgumentError, CensysSSLError
@@ -31,6 +31,7 @@ JWKS_HOST_MISSING = ('jwks_host is missing in JWT payload. Make sure '
                      'custom_jwks_host field is present in module_type')
 WRONG_JWKS_HOST = ('Wrong jwks_host in JWT payload. Make sure domain follows '
                    'the visibility.<region>.cisco.com structure')
+INVALID_CREDENTIALS = 'wrong api_id or api_secret'
 
 
 def get_public_key(jwks_host, token):
@@ -158,8 +159,10 @@ def catch_errors(func):
             return func(*args, **kwargs)
         except SSLError as error:
             raise CensysSSLError(error)
-        except CensysUnauthorizedException as error:
+        except (CensysUnauthorizedException, CensysException) as error:
             raise AuthorizationError(error)
+        except UnicodeEncodeError:
+            raise AuthorizationError(INVALID_CREDENTIALS)
         except CensysSearchException:
             return []
 
