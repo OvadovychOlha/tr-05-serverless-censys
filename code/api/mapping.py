@@ -26,9 +26,13 @@ class Sighting:
         return f"transient:{entity}-{uuid}"
 
     @staticmethod
-    def _observed_time(event_details):
+    def _observed_time(event_details, event):
+        try:
+            observed_time = event_details['observed_at']
+        except KeyError:
+            observed_time = event['timestamp']
         return {
-            'start_time': event_details['observed_at']
+            'start_time': observed_time
         }
 
     @staticmethod
@@ -69,7 +73,7 @@ class Sighting:
         event_details = self._get_event_details(event)
         sighting = {
             'id': self._transient_id(SIGHTING),
-            'observed_time': self._observed_time(event_details),
+            'observed_time': self._observed_time(event_details, event),
             'observables': [self.observable],
             'short_description': self._short_description(event),
             'description': self._description(event),
