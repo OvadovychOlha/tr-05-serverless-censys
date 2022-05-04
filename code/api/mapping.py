@@ -68,6 +68,8 @@ class Sighting:
             return event['service_removed_from_host']
         elif 'service_added_to_host' in event:
             return event['service_added_to_host']
+        elif 'service_enriched' in event:
+            return event['service_enriched']
 
     def extract(self, event):
         event_details = self._get_event_details(event)
