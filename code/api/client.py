@@ -12,7 +12,7 @@ class CensysClient:
 
     def _client(self):
         client = CensysHosts(api_id=self.api_id,
-                             api_secret=self.api_secret)
+                             api_secret=self.api_secret, timeout=60)
         return client
 
     @catch_errors
