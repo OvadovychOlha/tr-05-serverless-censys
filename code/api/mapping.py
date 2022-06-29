@@ -28,7 +28,9 @@ class Sighting:
     @staticmethod
     def _observed_time(event_details, event):
         try:
-            observed_time = event_details['observed_at']
+            observed_time = event_details['observed_at'] \
+                if 'observed_at' in event_details \
+                else event_details['resolved_at']
         except KeyError:
             observed_time = event['timestamp']
         return {
@@ -70,6 +72,12 @@ class Sighting:
             return event['service_added_to_host']
         elif 'service_enriched' in event:
             return event['service_enriched']
+        elif 'name_resolved_to_host' in event:
+            return event['name_resolved_to_host']
+        elif 'reverse_dns_updated' in event:
+            return event['reverse_dns_updated']
+        elif 'names_removed_from_host' in event:
+            return event['names_removed_from_host']
 
     def extract(self, event):
         event_details = self._get_event_details(event)
